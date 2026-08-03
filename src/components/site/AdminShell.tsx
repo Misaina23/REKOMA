@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { showConfirm } from "@/lib/alerts";
 import { clearStoredAdminSession, getStoredAdminSession } from "@/lib/admin-auth";
+import { getAppBaseUrl } from "@/lib/app-url";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
@@ -56,10 +57,7 @@ export function AdminShell({
   useEffect(() => {
     const load = async () => {
       try {
-        const base = (() => {
-          if (typeof window !== "undefined") return window.location.origin;
-          return process.env.VITE_APP_URL ?? "http://localhost:8080";
-        })();
+        const base = getAppBaseUrl();
         const response = await fetch(`${base}/api/messages`);
         if (!response.ok) return;
         const messages = (await response.json()) as Array<{ read?: boolean }>;

@@ -4,14 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/site/Reveal";
 import { PageHero, Section, SectionHeading } from "@/components/site/Section";
 import { showInfo } from "@/lib/alerts";
+import { getAppBaseUrl } from "@/lib/app-url";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/documents")({
   loader: async () => {
-    const base = (() => {
-      if (typeof window !== "undefined") return window.location.origin;
-      return process.env.VITE_APP_URL ?? "http://localhost:8080";
-    })();
+    const base = getAppBaseUrl();
     const res = await fetch(`${base}/api/cms/documents`);
     if (!res.ok) throw new Error("Failed to load documents");
     return res.json();

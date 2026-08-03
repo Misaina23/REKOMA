@@ -13,6 +13,7 @@ import {
 import { AdminShell } from "@/components/site/AdminShell";
 import { AdminPagination } from "@/components/site/AdminPagination";
 import { getStoredAdminSession } from "@/lib/admin-auth";
+import { getAppBaseUrl } from "@/lib/app-url";
 import { useI18n } from "@/lib/i18n";
 import { showConfirm, showError, showInfo, showSuccess } from "@/lib/alerts";
 import { getCsrfToken } from "@/lib/csrf";
@@ -59,10 +60,7 @@ function AdminMessages() {
   const load = async () => {
     setLoading(true);
     try {
-      const base = (() => {
-        if (typeof window !== "undefined") return window.location.origin;
-        return process.env.VITE_APP_URL ?? "http://localhost:8080";
-      })();
+      const base = getAppBaseUrl();
       const res = await fetch(`${base}/api/messages`, {
         headers: { "x-csrf-token": getCsrfToken() },
       });
@@ -101,10 +99,7 @@ function AdminMessages() {
   const unreadCount = messages.filter((m) => !m.read).length;
 
   const markAsRead = async (id: string, read: boolean) => {
-    const base = (() => {
-      if (typeof window !== "undefined") return window.location.origin;
-      return process.env.VITE_APP_URL ?? "http://localhost:8080";
-    })();
+    const base = getAppBaseUrl();
     const response = await fetch(`${base}/api/messages`, {
       method: "POST",
       headers: {
@@ -133,10 +128,7 @@ function AdminMessages() {
       cancelText: t({ fr: "Annuler", en: "Cancel" }),
     });
     if (!confirmed) return;
-    const base = (() => {
-      if (typeof window !== "undefined") return window.location.origin;
-      return process.env.VITE_APP_URL ?? "http://localhost:8080";
-    })();
+    const base = getAppBaseUrl();
     const deleteResponse = await fetch(`${base}/api/messages`, {
       method: "DELETE",
       headers: {
@@ -169,10 +161,7 @@ function AdminMessages() {
       cancelText: t({ fr: "Annuler", en: "Cancel" }),
     });
     if (!confirmed) return;
-    const base = (() => {
-      if (typeof window !== "undefined") return window.location.origin;
-      return process.env.VITE_APP_URL ?? "http://localhost:8080";
-    })();
+    const base = getAppBaseUrl();
     const updates = await Promise.all(
       messages
         .filter((m) => !m.read)

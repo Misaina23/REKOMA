@@ -1,14 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Reveal } from "@/components/site/Reveal";
 import { PageHero, Section } from "@/components/site/Section";
+import { getAppBaseUrl } from "@/lib/app-url";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/actualites")({
   loader: async () => {
-    const base = (() => {
-      if (typeof window !== "undefined") return window.location.origin;
-      return process.env.VITE_APP_URL ?? "http://localhost:8080";
-    })();
+    const base = getAppBaseUrl();
     const res = await fetch(`${base}/api/cms/news`);
     if (!res.ok) throw new Error("Failed to load news");
     return res.json();

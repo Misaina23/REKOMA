@@ -27,6 +27,7 @@ import { PageHero, Section } from "@/components/site/Section";
 import { org } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { getCsrfToken } from "@/lib/csrf";
+import { getAppBaseUrl } from "@/lib/app-url";
 
 export const Route = createFileRoute("/contact")({
   component: Contact,
@@ -77,10 +78,7 @@ function Contact() {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      const base = (() => {
-        if (typeof window !== "undefined") return window.location.origin;
-        return process.env.VITE_APP_URL ?? "http://localhost:8080";
-      })();
+      const base = getAppBaseUrl();
       const res = await fetch(`${base}/api/messages`, {
         method: "POST",
         headers: {

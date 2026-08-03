@@ -22,15 +22,13 @@ import { Reveal } from "@/components/site/Reveal";
 import { Section, SectionHeading } from "@/components/site/Section";
 import { axes, org, partners, stats } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
+import { getAppBaseUrl } from "@/lib/app-url";
 
 const icons = { Building2, Truck, Store, Sprout, GraduationCap, Droplets, Lightbulb };
 
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const base = (() => {
-      if (typeof window !== "undefined") return window.location.origin;
-      return process.env.VITE_APP_URL ?? "http://localhost:8080";
-    })();
+    const base = getAppBaseUrl();
     const res = await fetch(`${base}/api/cms/news`);
     if (!res.ok) return [];
     return res.json();

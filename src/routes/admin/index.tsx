@@ -25,6 +25,7 @@ import { Card } from "@/components/ui/card";
 import { Reveal } from "@/components/site/Reveal";
 import { AdminShell } from "@/components/site/AdminShell";
 import { getStoredAdminSession } from "@/lib/admin-auth";
+import { getAppBaseUrl } from "@/lib/app-url";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/admin/")({
@@ -50,10 +51,7 @@ function AdminDashboard() {
   });
 
   useEffect(() => {
-    const base = (() => {
-      if (typeof window !== "undefined") return window.location.origin;
-      return process.env.VITE_APP_URL ?? "http://localhost:8080";
-    })();
+    const base = getAppBaseUrl();
     Promise.all([
       fetch(`${base}/api/cms/news`).then((r) => r.json()),
       fetch(`${base}/api/cms/documents`).then((r) => r.json()),

@@ -12,6 +12,7 @@ import { AdminPagination } from "@/components/site/AdminPagination";
 import { FormDialog } from "@/components/site/FormDialog";
 import { showConfirm, showError, showSuccess } from "@/lib/alerts";
 import { getStoredAdminSession } from "@/lib/admin-auth";
+import { getAppBaseUrl } from "@/lib/app-url";
 import { getCsrfToken } from "@/lib/csrf";
 import { useI18n } from "@/lib/i18n";
 
@@ -58,10 +59,7 @@ function AdminDocuments() {
   });
 
   useEffect(() => {
-    const base = (() => {
-      if (typeof window !== "undefined") return window.location.origin;
-      return process.env.VITE_APP_URL ?? "http://localhost:8080";
-    })();
+    const base = getAppBaseUrl();
     fetch(`${base}/api/cms/documents`)
       .then((r) => r.json())
       .then((data) => {
@@ -143,10 +141,7 @@ function AdminDocuments() {
     }
   };
 
-  const getBaseUrl = () => {
-    if (typeof window !== "undefined") return window.location.origin;
-    return process.env.VITE_APP_URL ?? "http://localhost:8080";
-  };
+  const getBaseUrl = () => getAppBaseUrl();
 
   const handleDelete = async (id: string) => {
     try {

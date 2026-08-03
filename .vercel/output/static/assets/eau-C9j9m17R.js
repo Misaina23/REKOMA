@@ -1,0 +1,1 @@
+var e=`/assets/eau-DZBmFTPg.jpg`;export{e as t};
