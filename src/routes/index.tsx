@@ -28,10 +28,14 @@ const icons = { Building2, Truck, Store, Sprout, GraduationCap, Droplets, Lightb
 
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const base = getAppBaseUrl();
-    const res = await fetch(`${base}/api/cms/news`);
-    if (!res.ok) return [];
-    return res.json();
+    try {
+      const base = getAppBaseUrl();
+      const res = await fetch(`${base}/api/cms/news`);
+      if (!res.ok) return [];
+      return res.json();
+    } catch {
+      return [];
+    }
   },
   component: Home,
   head: () => ({

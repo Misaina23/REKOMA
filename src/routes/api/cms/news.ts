@@ -1,10 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { readFileSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { z } from "zod";
 import { verifyCsrfToken } from "@/lib/csrf";
-
-const CMS_FILE = resolve(process.cwd(), "public/cms-content.json");
+import { readCmsFile, writeCmsFile } from "@/lib/cms-store";
 
 interface CmsData {
   cms?: {
@@ -41,7 +38,7 @@ interface CmsData {
 
 function readCms(): CmsData {
   try {
-    const data = readFileSync(CMS_FILE, "utf-8");
+    const data = readCmsFile();
     return JSON.parse(data) as CmsData;
   } catch {
     return { cms: { news: [], documents: [], gallery: [], pages: [] } };
@@ -49,7 +46,7 @@ function readCms(): CmsData {
 }
 
 function writeCms(data: CmsData) {
-  writeFileSync(CMS_FILE, JSON.stringify(data, null, 2), "utf-8");
+  writeCmsFile(JSON.stringify(data, null, 2));
 }
 
 const newsSchema = z.object({

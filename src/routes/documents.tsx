@@ -9,10 +9,14 @@ import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/documents")({
   loader: async () => {
-    const base = getAppBaseUrl();
-    const res = await fetch(`${base}/api/cms/documents`);
-    if (!res.ok) throw new Error("Failed to load documents");
-    return res.json();
+    try {
+      const base = getAppBaseUrl();
+      const res = await fetch(`${base}/api/cms/documents`);
+      if (!res.ok) return [];
+      return res.json();
+    } catch {
+      return [];
+    }
   },
   component: Documents,
   head: () => ({

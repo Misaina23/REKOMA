@@ -6,10 +6,14 @@ import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/actualites")({
   loader: async () => {
-    const base = getAppBaseUrl();
-    const res = await fetch(`${base}/api/cms/news`);
-    if (!res.ok) throw new Error("Failed to load news");
-    return res.json();
+    try {
+      const base = getAppBaseUrl();
+      const res = await fetch(`${base}/api/cms/news`);
+      if (!res.ok) return [];
+      return res.json();
+    } catch {
+      return [];
+    }
   },
   component: News,
   head: () => ({
