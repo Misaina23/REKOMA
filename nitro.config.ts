@@ -13,6 +13,17 @@ export default defineNitroConfig({
   // traced/copied, which crashes every request with ERR_MODULE_NOT_FOUND at runtime.
   // Inlining them bundles the code directly into the function output.
   externals: {
-    inline: ["tslib"],
+    inline: ["tslib", "@tanstack/react-start", "@tanstack/start-client-core", "@tanstack/start-server-core"],
+  },
+  runtimeConfig: {
+    nitro: {
+      routeRules: {
+        "**": {
+          headers: {
+            "cache-control": "no-store",
+          },
+        },
+      },
+    },
   },
 });
