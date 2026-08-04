@@ -1,6 +1,6 @@
 import { o as __toESM } from "../../_runtime.mjs";
 import { l as require_react_dom, u as require_react } from "../@floating-ui/react-dom+[...].mjs";
-import { c as Presence, d as useLayoutEffect2, f as createContextScope, g as createSlot, l as useControllableState, m as dispatchDiscreteCustomEvent, p as Primitive, u as useId, v as useComposedRefs, y as require_jsx_runtime } from "./react-accordion+[...].mjs";
+import { c as Presence, d as useControllableState, f as useId, g as createSlot, l as Primitive, m as createContextScope, p as useLayoutEffect2, u as dispatchDiscreteCustomEvent, v as useComposedRefs, y as require_jsx_runtime } from "./react-accordion+[...].mjs";
 import { t as composeEventHandlers } from "../radix-ui__primitive.mjs";
 import { __assign, __rest, __spreadArray } from "tslib";
 //#region node_modules/@radix-ui/react-use-callback-ref/dist/index.mjs
@@ -1434,7 +1434,8 @@ var Slot = createSlot("DialogOverlay.RemoveScroll");
 var DialogOverlayImpl = /* @__PURE__ */ import_react.forwardRef(/* @__PURE__ */ __name(function DialogOverlayImpl2(props, forwardedRef) {
 	const { __scopeDialog, ...overlayProps } = props;
 	const context = useDialogContext(OVERLAY_NAME, __scopeDialog);
-	const composedRefs = useComposedRefs(forwardedRef, useDismissableLayerSurface());
+	const registerDismissableSurface = useDismissableLayerSurface();
+	const composedRefs = useComposedRefs(forwardedRef, registerDismissableSurface);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(ReactRemoveScroll, {
 		as: Slot,
 		allowPinchZoom: true,

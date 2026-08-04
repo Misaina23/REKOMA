@@ -1,6 +1,6 @@
 import { o as __toESM } from "../../_runtime.mjs";
 import { a as offset, c as useFloating, i as limitShift, n as flip, o as shift, r as hide, s as size, t as arrow, u as require_react } from "../@floating-ui/react-dom+[...].mjs";
-import { c as Presence, d as useLayoutEffect2, f as createContextScope, g as createSlot, l as useControllableState, m as dispatchDiscreteCustomEvent, o as useDirection, p as Primitive, s as createCollection, u as useId, v as useComposedRefs, y as require_jsx_runtime } from "./react-accordion+[...].mjs";
+import { c as Presence, d as useControllableState, f as useId, g as createSlot, l as Primitive, m as createContextScope, o as useDirection, p as useLayoutEffect2, s as createCollection, u as dispatchDiscreteCustomEvent, v as useComposedRefs, y as require_jsx_runtime } from "./react-accordion+[...].mjs";
 import { t as composeEventHandlers } from "../radix-ui__primitive.mjs";
 import { d as useFocusGuards, f as Portal$1, h as useCallbackRef, l as hideOthers, m as DismissableLayer, p as FocusScope, u as ReactRemoveScroll } from "./react-dialog+[...].mjs";
 import { n as autoUpdate } from "../@floating-ui/dom+[...].mjs";
@@ -76,10 +76,11 @@ var PopperAnchor = /* @__PURE__ */ import_react.forwardRef(/* @__PURE__ */ __nam
 	const context = usePopperContext(ANCHOR_NAME, __scopePopper);
 	const ref = import_react.useRef(null);
 	const onAnchorChange = context.onAnchorChange;
-	const composedRefs = useComposedRefs(forwardedRef, import_react.useCallback((node) => {
+	const callbackRef = import_react.useCallback((node) => {
 		ref.current = node;
 		if (node) onAnchorChange(node);
-	}, [onAnchorChange]));
+	}, [onAnchorChange]);
+	const composedRefs = useComposedRefs(forwardedRef, callbackRef);
 	const anchorRef = import_react.useRef(null);
 	import_react.useEffect(() => {
 		if (!virtualRef) return;

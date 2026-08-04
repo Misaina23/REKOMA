@@ -181,7 +181,7 @@ var Base64Decoder = class {
 	constructor(opts) {
 		opts = opts || {};
 		this.decoder = opts.decoder || new TextDecoder();
-		this.maxChunkSize = 100 * 1024;
+		this.maxChunkSize = 102400;
 		this.chunks = [];
 		this.remainder = "";
 	}
@@ -217,7 +217,7 @@ var QPDecoder = class {
 	constructor(opts) {
 		opts = opts || {};
 		this.decoder = opts.decoder || new TextDecoder();
-		this.maxChunkSize = 100 * 1024;
+		this.maxChunkSize = 102400;
 		this.remainder = "";
 		this.chunks = [];
 	}
@@ -419,7 +419,6 @@ var MimeNode = class {
 						value = "";
 					} else value += chr;
 					escaped = false;
-					break;
 			}
 		}
 		value = value.trim();
@@ -491,9 +490,7 @@ var MimeNode = class {
 				case "content-id":
 					this.contentId = value;
 					break;
-				case "content-description":
-					this.contentDescription = value;
-					break;
+				case "content-description": this.contentDescription = value;
 			}
 		}
 		this.contentType.parsed = this.parseStructuredHeader(this.contentType.value);
@@ -2975,7 +2972,6 @@ function _handleAddress(tokens, depth) {
 			default:
 				state = "text";
 				insideQuotes = false;
-				break;
 		}
 		else if (token.value) {
 			if (state === "address") token.value = token.value.replace(/^[^<]*<\s*/, "");
@@ -3235,7 +3231,7 @@ function base64ArrayBuffer(arrayBuffer) {
 //#endregion
 //#region node_modules/postal-mime/src/postal-mime.js
 var MAX_NESTING_DEPTH = 256;
-var MAX_HEADERS_SIZE = 2 * 1024 * 1024;
+var MAX_HEADERS_SIZE = 2097152;
 function toCamelCase(key) {
 	return key.replace(/-(.)/g, (o, c) => c.toUpperCase());
 }
@@ -3399,16 +3395,12 @@ var PostalMime = class PostalMime {
 						case "text":
 							textContent[textType].push(textEntry.value);
 							break;
-						case "subMessage":
-							switch (textType) {
-								case "html":
-									textContent[textType].push(formatHtmlHeader(textEntry.value));
-									break;
-								case "plain":
-									textContent[textType].push(formatTextHeader(textEntry.value));
-									break;
-							}
-							break;
+						case "subMessage": switch (textType) {
+							case "html":
+								textContent[textType].push(formatHtmlHeader(textEntry.value));
+								break;
+							case "plain": textContent[textType].push(formatTextHeader(textEntry.value));
+						}
 					}
 				});
 				else {
@@ -3417,9 +3409,7 @@ var PostalMime = class PostalMime {
 						case "html":
 							alternativeType = "plain";
 							break;
-						case "plain":
-							alternativeType = "html";
-							break;
+						case "plain": alternativeType = "html";
 					}
 					(mapEntry[alternativeType] || []).forEach((textEntry) => {
 						switch (textEntry.type) {
@@ -3428,21 +3418,15 @@ var PostalMime = class PostalMime {
 									case "html":
 										textContent[textType].push(textToHtml(textEntry.value));
 										break;
-									case "plain":
-										textContent[textType].push(htmlToText(textEntry.value));
-										break;
+									case "plain": textContent[textType].push(htmlToText(textEntry.value));
 								}
 								break;
-							case "subMessage":
-								switch (textType) {
-									case "html":
-										textContent[textType].push(formatHtmlHeader(textEntry.value));
-										break;
-									case "plain":
-										textContent[textType].push(formatTextHeader(textEntry.value));
-										break;
-								}
-								break;
+							case "subMessage": switch (textType) {
+								case "html":
+									textContent[textType].push(formatHtmlHeader(textEntry.value));
+									break;
+								case "plain": textContent[textType].push(formatTextHeader(textEntry.value));
+							}
 						}
 					});
 				}

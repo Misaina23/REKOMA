@@ -534,15 +534,16 @@ var isWatched = (name, _names, isBlurEvent) => {
 };
 var iterateFieldsByAction = (fields, action, fieldsNames, abortEarly) => {
 	for (const key of fieldsNames || Object.keys(fields)) {
-		const field = get(fields, key);
+		if (key === "_f") continue;
+		const field = fieldsNames ? get(fields, key) : fields[key];
 		if (field) {
-			const { _f, ...currentField } = field;
+			const { _f } = field;
 			if (_f) {
 				if (_f.refs && _f.refs[0] && action(_f.refs[0], key) && !abortEarly) return true;
 				else if (_f.ref && action(_f.ref, _f.name) && !abortEarly) return true;
-				else if (iterateFieldsByAction(currentField, action)) break;
-			} else if (isObject(currentField)) {
-				if (iterateFieldsByAction(currentField, action)) break;
+				else if (iterateFieldsByAction(field, action)) break;
+			} else if (isObject(field) || Array.isArray(field)) {
+				if (iterateFieldsByAction(field, action)) break;
 			}
 		}
 	}
@@ -753,7 +754,7 @@ var validateField = async (field, disabledFieldNames, formValues, validateAllFie
 var convertToArrayPayload = (value) => Array.isArray(value) ? value : [value];
 var compact = (value) => Array.isArray(value) ? value.filter(Boolean) : [];
 function baseGet(object, updatePath) {
-	const length = updatePath.slice(0, -1).length;
+	const length = updatePath.length - 1;
 	let index = 0;
 	while (index < length) {
 		if (isNullOrUndefined(object)) {
@@ -934,6 +935,18 @@ function extractFormValues(fieldsState, formValues) {
 var isMultipleSelect = (element) => element.type === `select-multiple`;
 var isRadioOrCheckbox = (ref) => isRadioInput(ref) || isCheckBoxInput(ref);
 var live = (ref) => isHTMLElement(ref) && ref.isConnected;
+function isDirtyContainer(value) {
+	return Array.isArray(value) || isObject(value);
+}
+function collectDirtyFieldNames(dirtyTree, cachedDirtyFields, prefix = "", names = []) {
+	for (const key in dirtyTree) {
+		const path = prefix ? `${prefix}.${key}` : key;
+		const value = dirtyTree[key];
+		if (isDirtyContainer(value) && isDirtyContainer(get(cachedDirtyFields, path))) collectDirtyFieldNames(value, cachedDirtyFields, path, names);
+		else names.push(path);
+	}
+	return names;
+}
 var objectHasFunction = (data) => {
 	for (const key in data) if (isFunction(data[key])) return true;
 	return false;
@@ -984,7 +997,7 @@ function getFieldValue(_f) {
 	if (isRadioInput(ref)) return getRadioValue(_f.refs).value;
 	if (isMultipleSelect(ref)) return [...ref.selectedOptions].map(({ value }) => value);
 	if (isCheckBoxInput(ref)) return getCheckboxValue(_f.refs).value;
-	return getFieldValueAs(isUndefined(ref.value) ? _f.ref.value : ref.value, _f);
+	return getFieldValueAs(ref.value, _f);
 }
 var getResolverOptions = (fieldsNames, _fields, criteriaMode, shouldUseNativeValidation) => {
 	const fields = {};
@@ -1036,8 +1049,7 @@ function schemaErrorLookup(errors, _fields, name) {
 }
 var shouldRenderFormState = (formStateData, _proxyFormState, updateFormState, isRoot) => {
 	updateFormState(formStateData);
-	const { name, ...formState } = formStateData;
-	const keys = Object.keys(formState);
+	const keys = Object.keys(formStateData).filter((key) => key !== "name");
 	return !keys.length || isRoot && keys.length >= Object.keys(_proxyFormState).length || keys.find((key) => _proxyFormState[key] === (!isRoot || VALIDATION_MODE.all));
 };
 var shouldSubscribeByName = (name, signalName, exact) => !name || !signalName || name === signalName || convertToArrayPayload(name).some((currentName) => currentName && (exact ? currentName === signalName || currentName.startsWith(signalName + ".") : currentName.startsWith(signalName) || signalName.startsWith(currentName)));
@@ -1402,6 +1414,10 @@ function createFormControl(props = {}) {
 		options.shouldValidate && trigger(name, { delayError: options.delayError });
 	};
 	const setFieldValues = (name, value, options, skipClone = false, skipRender = false) => {
+		if (_names.array.has(name)) _subjects.array.next({
+			name,
+			values: skipClone ? _formValues : cloneObject(_formValues)
+		});
 		for (const fieldKey in value) {
 			if (!value.hasOwnProperty(fieldKey)) return;
 			const fieldValue = value[fieldKey];
@@ -1796,6 +1812,7 @@ function createFormControl(props = {}) {
 		}
 	};
 	const handleSubmit = (onValid, onInvalid) => async (e) => {
+		let result = void 0;
 		let onValidError = void 0;
 		if (e) {
 			e.preventDefault && e.preventDefault();
@@ -1817,7 +1834,7 @@ function createFormControl(props = {}) {
 		if (isEmptyObject(_formState.errors)) {
 			_subjects.state.next({ errors: {} });
 			try {
-				await onValid(fieldValues, e);
+				result = await onValid(fieldValues, e);
 			} catch (error) {
 				onValidError = error;
 			}
@@ -1834,6 +1851,7 @@ function createFormControl(props = {}) {
 			errors: _formState.errors
 		});
 		if (onValidError) throw onValidError;
+		return result;
 	};
 	const resetField = (name, options = {}) => {
 		if (get(_fields, name)) {
@@ -1863,7 +1881,7 @@ function createFormControl(props = {}) {
 		if (!keepStateOptions.keepDefaultValues) _defaultValues = updatedValues;
 		if (!keepStateOptions.keepValues) {
 			if (keepStateOptions.keepDirtyValues) {
-				const fieldsToCheck = /* @__PURE__ */ new Set([..._names.mount, ...Object.keys(getDirtyFields(_defaultValues, _formValues, void 0, fieldRefs))]);
+				const fieldsToCheck = /* @__PURE__ */ new Set([..._names.mount, ...collectDirtyFieldNames(getDirtyFields(_defaultValues, _formValues, void 0, fieldRefs), _formState.dirtyFields)]);
 				for (const fieldName of Array.from(fieldsToCheck)) {
 					const isDirty = get(_formState.dirtyFields, fieldName);
 					const existingValue = get(_formValues, fieldName);
@@ -2224,7 +2242,7 @@ function t(r, e) {
 	return n && n.then ? n.then(void 0, e) : n;
 }
 function s(r, e) {
-	for (var o = {}; r.length;) {
+	for (var o = Object.create(null); r.length;) {
 		var t = r[0], s = t.code, i = t.message, u = t.path.join(".");
 		if (!o[u]) if ("unionErrors" in t) {
 			var a, c, l = t.unionErrors.reduce(function(r, e) {
@@ -2251,7 +2269,7 @@ function s(r, e) {
 	return o;
 }
 function i(r, e) {
-	for (var t = {}, s = function() {
+	for (var t = Object.create(null), s = function() {
 		var s = r[0], i = s.code, u = s.message, a = s.path.join(".");
 		if (!t[a]) if ("invalid_union" === s.code && s.errors.length > 0) {
 			var c, l, f = s.errors.reduce(function(r, e) {

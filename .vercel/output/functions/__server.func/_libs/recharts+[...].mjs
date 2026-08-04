@@ -1371,7 +1371,13 @@ var DefaultLegendContent = /*#__PURE__*/ function(_PureComponent) {
 	return _createClass$17(DefaultLegendContent, [
 		{
 			key: "renderIcon",
-			value: function renderIcon(data) {
+			value: 
+			/**
+			* Render the path of icon
+			* @param {Object} data Data of each legend item
+			* @return {String} Path element
+			*/
+			function renderIcon(data) {
 				var inactiveColor = this.props.inactiveColor;
 				var halfSize = SIZE / 2;
 				var sixthSize = SIZE / 6;
@@ -2925,7 +2931,7 @@ var CONVERSION_RATES = {
 	pt: 96 / 72,
 	pc: 96 / 6,
 	"in": 96,
-	Q: 96 / (2.54 * 40),
+	Q: 96 / 101.6,
 	px: 1
 };
 var FIXED_CSS_LENGTH_UNITS = Object.keys(CONVERSION_RATES);
@@ -3281,9 +3287,7 @@ var Text = function Text(_ref5) {
 		case "middle":
 			startDy = reduceCSSCalc("calc(".concat((wordsByLines.length - 1) / 2, " * -").concat(lineHeight, " + (").concat(capHeight, " / 2))"));
 			break;
-		default:
-			startDy = reduceCSSCalc("calc(".concat(wordsByLines.length - 1, " * -").concat(lineHeight, ")"));
-			break;
+		default: startDy = reduceCSSCalc("calc(".concat(wordsByLines.length - 1, " * -").concat(lineHeight, ")"));
 	}
 	var transforms = [];
 	if (scaleToFit) {
@@ -4273,9 +4277,7 @@ var getMainColorOfGraphicItem = function getMainColorOfGraphicItem(item) {
 		case "Radar":
 			result = stroke && stroke !== "none" ? stroke : fill;
 			break;
-		default:
-			result = fill;
-			break;
+		default: result = fill;
 	}
 	return result;
 };
@@ -9557,7 +9559,6 @@ var CartesianAxis = /*#__PURE__*/ function(_Component) {
 						y1 = y2 + sign * finalTickSize;
 						ty = y1 + sign * tickMargin;
 						tx = tickCoord;
-						break;
 				}
 				return {
 					line: {
@@ -9585,9 +9586,7 @@ var CartesianAxis = /*#__PURE__*/ function(_Component) {
 					case "right":
 						textAnchor = mirror ? "end" : "start";
 						break;
-					default:
-						textAnchor = "middle";
-						break;
+					default: textAnchor = "middle";
 				}
 				return textAnchor;
 			}
@@ -9605,9 +9604,7 @@ var CartesianAxis = /*#__PURE__*/ function(_Component) {
 					case "top":
 						verticalAnchor = mirror ? "start" : "end";
 						break;
-					default:
-						verticalAnchor = mirror ? "end" : "start";
-						break;
+					default: verticalAnchor = mirror ? "end" : "start";
 				}
 				return verticalAnchor;
 			}
@@ -9639,7 +9636,15 @@ var CartesianAxis = /*#__PURE__*/ function(_Component) {
 		},
 		{
 			key: "renderTicks",
-			value: function renderTicks(ticks, fontSize, letterSpacing) {
+			value: 
+			/**
+			* render the ticks
+			* @param {Array} ticks The ticks to actually render (overrides what was passed in props)
+			* @param {string} fontSize Fontsize to consider for tick spacing
+			* @param {string} letterSpacing Letterspacing to consider for tick spacing
+			* @return {ReactComponent} renderedTicks
+			*/
+			function renderTicks(ticks, fontSize, letterSpacing) {
 				var _this2 = this;
 				var _this$props6 = this.props, tickLine = _this$props6.tickLine, stroke = _this$props6.stroke, tick = _this$props6.tick, tickFormatter = _this$props6.tickFormatter, unit = _this$props6.unit;
 				var finalTicks = getTicks(_objectSpread$4(_objectSpread$4({}, this.props), {}, { ticks }), fontSize, letterSpacing);
@@ -11051,8 +11056,6 @@ var AccessibilityManager = /*#__PURE__*/ function() {
 						if (this.layout !== "horizontal") return;
 						this.activeIndex = Math.max(this.activeIndex - 1, 0);
 						this.spoofMouse();
-						break;
-					default: break;
 				}
 			}
 		},
@@ -12310,8 +12313,8 @@ var generateCategoricalChart = function generateCategoricalChart(_ref6) {
 					legendContent
 				});
 				if (!props) return null;
-				var item = props.item;
-				return /*#__PURE__*/ (0, import_react.cloneElement)(item, _objectSpread(_objectSpread({}, _objectWithoutProperties(props, _excluded)), {}, {
+				var item = props.item, otherProps = _objectWithoutProperties(props, _excluded);
+				return /*#__PURE__*/ (0, import_react.cloneElement)(item, _objectSpread(_objectSpread({}, otherProps), {}, {
 					chartWidth: width,
 					chartHeight: height,
 					margin,
@@ -12457,8 +12460,9 @@ var generateCategoricalChart = function generateCategoricalChart(_ref6) {
 					* An example usage case is a FunnelChart
 					*/
 					var _ref11$graphicalItem = ((_this$getItemByXY = _this.getItemByXY(_this.state.activeCoordinate)) !== null && _this$getItemByXY !== void 0 ? _this$getItemByXY : { graphicalItem }).graphicalItem, _ref11$graphicalItem$ = _ref11$graphicalItem.item, xyItem = _ref11$graphicalItem$ === void 0 ? element : _ref11$graphicalItem$, childIndex = _ref11$graphicalItem.childIndex;
+					var elementProps = _objectSpread(_objectSpread(_objectSpread({}, item.props), itemEvents), {}, { activeIndex: childIndex });
 					return [
-						/*#__PURE__*/ (0, import_react.cloneElement)(xyItem, _objectSpread(_objectSpread(_objectSpread({}, item.props), itemEvents), {}, { activeIndex: childIndex })),
+						/*#__PURE__*/ (0, import_react.cloneElement)(xyItem, elementProps),
 						null,
 						null
 					];

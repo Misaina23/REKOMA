@@ -1,6 +1,6 @@
 import { o as __toESM } from "../_runtime.mjs";
 import { u as require_react } from "./@floating-ui/react-dom+[...].mjs";
-import { c as Presence, f as createContextScope, l as useControllableState, o as useDirection, p as Primitive, v as useComposedRefs, y as require_jsx_runtime } from "./@radix-ui/react-accordion+[...].mjs";
+import { c as Presence, d as useControllableState, l as Primitive, m as createContextScope, o as useDirection, v as useComposedRefs, y as require_jsx_runtime } from "./@radix-ui/react-accordion+[...].mjs";
 import { t as composeEventHandlers } from "./radix-ui__primitive.mjs";
 import { b as useSize, h as createRovingFocusGroupScope, m as Root, p as Item } from "./@radix-ui/react-dropdown-menu+[...].mjs";
 //#region node_modules/@radix-ui/react-radio-group/dist/index.mjs
@@ -286,16 +286,18 @@ var RadioGroupItem = /* @__PURE__ */ import_react.forwardRef(/* @__PURE__ */ __n
 }, "RadioGroupItem"));
 var RadioGroupItemBubbleInput = /* @__PURE__ */ import_react.forwardRef(/* @__PURE__ */ __name(function RadioGroupItemBubbleInput2(props, forwardedRef) {
 	const { __scopeRadioGroup, ...bubbleProps } = props;
+	const radioScope = useRadioScope(__scopeRadioGroup);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RadioBubbleInput, {
-		...useRadioScope(__scopeRadioGroup),
+		...radioScope,
 		...bubbleProps,
 		ref: forwardedRef
 	});
 }, "RadioGroupItemBubbleInput"));
 var RadioGroupIndicator = /* @__PURE__ */ import_react.forwardRef(/* @__PURE__ */ __name(function RadioGroupIndicator2(props, forwardedRef) {
 	const { __scopeRadioGroup, ...indicatorProps } = props;
+	const radioScope = useRadioScope(__scopeRadioGroup);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(RadioIndicator, {
-		...useRadioScope(__scopeRadioGroup),
+		...radioScope,
 		...indicatorProps,
 		ref: forwardedRef
 	});

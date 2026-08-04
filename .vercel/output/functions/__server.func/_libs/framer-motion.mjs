@@ -785,7 +785,8 @@ function matchOrder(origin, target) {
 	for (let i = 0; i < target.values.length; i++) {
 		const type = target.types[i];
 		const originIndex = origin.indexes[type][pointers[type]];
-		orderedOrigin[i] = origin.values[originIndex] ?? 0;
+		const originValue = origin.values[originIndex] ?? 0;
+		orderedOrigin[i] = originValue;
 		pointers[type]++;
 	}
 	return orderedOrigin;

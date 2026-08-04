@@ -2675,7 +2675,7 @@ function createWebhooks(platformFunctions) {
 }
 //#endregion
 //#region node_modules/stripe/esm/apiVersion.js
-var ApiVersion = "2026-06-24.dahlia";
+var ApiVersion = "2026-07-29.dahlia";
 //#endregion
 //#region node_modules/stripe/esm/ResourceNamespace.js
 function ResourceNamespace(stripe, resources) {
@@ -8731,7 +8731,7 @@ var AccountResource = class extends StripeResource {
 	* With [Connect](https://docs.stripe.com/docs/connect), you can create Stripe accounts for your users.
 	* To do this, you'll first need to [register your platform](https://dashboard.stripe.com/account/applications/settings).
 	*
-	* If you've already collected information for your connected accounts, you [can prefill that information](https://docs.stripe.com/docs/connect/best-practices#onboarding) when
+	* If you've already collected information for your connected accounts, you [can prefill that information](https://docs.stripe.com/connect/marketplace/tasks/create#prefill-account-information) when
 	* creating the account. Connect Onboarding won't ask for the prefilled information during account onboarding.
 	* You can prefill any information on the account.
 	*/
@@ -8741,10 +8741,20 @@ var AccountResource = class extends StripeResource {
 	/**
 	* With [Connect](https://docs.stripe.com/connect), you can reject accounts that you have flagged as suspicious.
 	*
-	* Only accounts where your platform is liable for negative account balances, which includes Custom and Express accounts, can be rejected. Test-mode accounts can be rejected at any time. Live-mode accounts can only be rejected after all balances are zero.
+	* Only accounts where your platform is liable for negative account balances, which includes Custom and Express accounts, can be rejected.
 	*/
 	reject(id, params, options) {
 		return this._makeRequest("POST", `/v1/accounts/${encodeURIComponent(id)}/reject`, params, options);
+	}
+	/**
+	* With Connect, you can unreject accounts that you have previously rejected.
+	*
+	* Only accounts that were rejected by your platform can be unrejected. This API cannot be used to unreject accounts that were rejected by Stripe.
+	*
+	* Unreject will only enable charges and/or payouts if there are no other restrictions other than those placed by a previous rejection. If you have separately paused charges and/or payouts outside of rejection, those pauses will remain in place after unrejection.
+	*/
+	unreject(id, params, options) {
+		return this._makeRequest("POST", `/v1/accounts/${encodeURIComponent(id)}/unreject`, params, options);
 	}
 	/**
 	* Returns a list of capabilities associated with the account. The capabilities are returned sorted by creation date, with the most recent capability appearing first.
@@ -8810,7 +8820,7 @@ var AccountResource = class extends StripeResource {
 		return this._makeRequest("POST", `/v1/accounts/${encodeURIComponent(id)}/login_links`, params, options);
 	}
 	/**
-	* Deletes an existing person's relationship to the account's legal entity. Any person with a relationship for an account can be deleted through the API, except if the person is the account_opener. If your integration is using the executive parameter, you cannot delete the only verified executive on file.
+	* Deletes an existing person's relationship to the account's legal entity. Any person with a relationship for an account can be deleted through the API, except if the person is the representative. If your integration is using the executive parameter, you cannot delete the only verified executive on file.
 	*/
 	deletePerson(accountId, id, params, options) {
 		return this._makeRequest("DELETE", `/v1/accounts/${encodeURIComponent(accountId)}/persons/${encodeURIComponent(id)}`, params, options);
@@ -9962,7 +9972,7 @@ var DisputeResource = class extends StripeResource {
 		return this._makeRequest("POST", `/v1/disputes/${encodeURIComponent(id)}`, params, options);
 	}
 	/**
-	* Closing the dispute for a charge indicates that you do not have any evidence to submit and are essentially dismissing the dispute, acknowledging it as lost.
+	* Closing the dispute for a charge indicates that you do not have any evidence to submit and are essentially dismissing the dispute (accepting it), acknowledging it as lost.
 	*
 	* The status of the dispute will change from needs_response to lost. Closing a dispute is irreversible.
 	*/
@@ -11678,7 +11688,7 @@ var PaymentMethodResource = class extends StripeResource {
 		return this._makeRequest("POST", `/v1/payment_methods/${encodeURIComponent(id)}/attach`, params, options);
 	}
 	/**
-	* Detaches a PaymentMethod object from a Customer. After a PaymentMethod is detached, it can no longer be used for a payment or re-attached to a Customer.
+	* Detaches a PaymentMethod object from a Customer. Detachment is permanent and irreversible — once detached, a PaymentMethod can no longer be used for payments or re-attached to a Customer.
 	*/
 	detach(id, params, options) {
 		return this._makeRequest("POST", `/v1/payment_methods/${encodeURIComponent(id)}/detach`, params, options);
@@ -11754,6 +11764,12 @@ var PaymentMethodDomainResource = class extends StripeResource {
 //#endregion
 //#region node_modules/stripe/esm/resources/PaymentRecords.js
 var PaymentRecordResource = class extends StripeResource {
+	/**
+	* List all the Payment Records for a given merchant.
+	*/
+	list(params, options) {
+		return this._makeRequest("GET", "/v1/payment_records", params, options, { methodType: "list" });
+	}
 	/**
 	* Retrieves a Payment Record with the given ID
 	*/
@@ -15900,7 +15916,7 @@ var Stripe = class Stripe {
 		return eventNotification;
 	}
 };
-Stripe.PACKAGE_VERSION = "22.3.2";
+Stripe.PACKAGE_VERSION = "22.4.0";
 Stripe.API_VERSION = ApiVersion;
 Stripe.aiAgent = "";
 Stripe.AI_AGENT = "";

@@ -493,7 +493,7 @@ var getDirectChildByClass = (elem, className) => Array.from(elem.children).find(
 */
 var applyNumericalStyle = (elem, property, value) => {
 	if (value === `${parseInt(`${value}`)}`) value = parseInt(value);
-	if (value || value === 0) elem.style.setProperty(property, typeof value === "number" ? `${value}px` : 	/** @type {string} */ value);
+	if (value || value === 0) elem.style.setProperty(property, typeof value === "number" ? `${value}px` : /** @type {string} */ value);
 	else elem.style.removeProperty(property);
 };
 /**
@@ -1421,7 +1421,7 @@ var up = () => {
 * @returns {{ clientX: number, clientY: number }}
 */
 var getClientXY = (event) => {
-	const source = event.type.startsWith("touch") ? event.touches[0] : 	/** @type {MouseEvent} */ event;
+	const source = event.type.startsWith("touch") ? event.touches[0] : /** @type {MouseEvent} */ event;
 	return {
 		clientX: source.clientX,
 		clientY: source.clientY
@@ -3732,17 +3732,17 @@ var prepareParams = (userParams, mixinParams) => {
 * @returns {DomCache}
 */
 var populateDomCache = (instance) => {
-	const domCache = (	/** @type {DomCache} */ {
-		popup: getPopup(),
-		container: getContainer(),
-		actions: getActions(),
-		confirmButton: getConfirmButton(),
-		denyButton: getDenyButton(),
-		cancelButton: getCancelButton(),
-		loader: getLoader(),
-		closeButton: getCloseButton(),
-		validationMessage: getValidationMessage(),
-		progressSteps: getProgressSteps()
+	const domCache = (/** @type {DomCache} */ {
+		popup: /** @type {HTMLElement} */ getPopup(),
+		container: /** @type {HTMLElement} */ getContainer(),
+		actions: /** @type {HTMLElement} */ getActions(),
+		confirmButton: /** @type {HTMLElement} */ getConfirmButton(),
+		denyButton: /** @type {HTMLElement} */ getDenyButton(),
+		cancelButton: /** @type {HTMLElement} */ getCancelButton(),
+		loader: /** @type {HTMLElement} */ getLoader(),
+		closeButton: /** @type {HTMLElement} */ getCloseButton(),
+		validationMessage: /** @type {HTMLElement} */ getValidationMessage(),
+		progressSteps: /** @type {HTMLElement} */ getProgressSteps()
 	});
 	privateProps.domCache.set(instance, domCache);
 	return domCache;

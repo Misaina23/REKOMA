@@ -1,6 +1,6 @@
 import { o as __toESM } from "../_runtime.mjs";
 import { u as require_react } from "./@floating-ui/react-dom+[...].mjs";
-import { _ as composeRefs, p as Primitive, u as useId } from "./@radix-ui/react-accordion+[...].mjs";
+import { _ as composeRefs, f as useId, l as Primitive } from "./@radix-ui/react-accordion+[...].mjs";
 import { a as DialogOverlay, o as DialogPortal, r as DialogContent, t as Dialog } from "./@radix-ui/react-dialog+[...].mjs";
 //#region node_modules/cmdk/dist/chunk-NZJY6EH4.mjs
 var U = 1;

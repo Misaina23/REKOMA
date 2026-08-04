@@ -1,65 +1,84 @@
-//#region node_modules/.nitro/vite/services/ssr/index.js
-var lastCapturedError;
-var TTL_MS = 5e3;
-function record(error) {
-	lastCapturedError = {
-		error,
-		at: Date.now()
+import "../_runtime.mjs";
+import { i as server_default, n as createServerFn, r as getServerFnById, t as TSS_SERVER_FUNCTION } from "./ssr2.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/error-page-nWROVIJU.js
+var createMiddleware = (options, __opts) => {
+	const resolvedOptions = {
+		type: "request",
+		...__opts || options
 	};
-}
-var CAUSE_DEPTH_LIMIT = 5;
-var DESCRIPTION_LENGTH_LIMIT = 8e3;
-function describeError(error) {
-	const parts = [];
-	let current = error;
-	for (let depth = 0; depth < CAUSE_DEPTH_LIMIT && current != null; depth++) {
-		if (!(current instanceof Error)) {
-			parts.push(typeof current === "string" ? current : safeStringify(current));
-			break;
+	const setValidator = (validator) => {
+		return createMiddleware({}, Object.assign(resolvedOptions, {
+			validator,
+			inputValidator: validator
+		}));
+	};
+	return {
+		options: resolvedOptions,
+		middleware: (middleware) => {
+			return createMiddleware({}, Object.assign(resolvedOptions, { middleware }));
+		},
+		validator: setValidator,
+		inputValidator: setValidator,
+		client: (client) => {
+			return createMiddleware({}, Object.assign(resolvedOptions, { client }));
+		},
+		server: (server) => {
+			return createMiddleware({}, Object.assign(resolvedOptions, { server }));
 		}
-		const label = depth === 0 ? "" : "caused by: ";
-		const status = describeStatus(current);
-		parts.push(`${label}${current.stack ?? `${current.name}: ${current.message}`}${status}`);
-		current = current.cause;
-	}
-	return parts.join("\n").slice(0, DESCRIPTION_LENGTH_LIMIT);
-}
-function describeStatus(error) {
-	const { status, statusCode } = error;
-	const value = status ?? statusCode;
-	return typeof value === "number" ? ` (status ${value})` : "";
-}
-function safeStringify(value) {
-	try {
-		return JSON.stringify(value) ?? String(value);
-	} catch {
-		return String(value);
-	}
-}
-function isErrorLike(value) {
-	return value instanceof Error;
-}
-var originalConsoleError = console.error.bind(console);
-console.error = (...args) => {
-	originalConsoleError(...args.map((arg) => {
-		if (!isErrorLike(arg)) return arg;
-		record(arg);
-		return describeError(arg);
-	}));
+	};
 };
-if (typeof globalThis.addEventListener === "function") {
-	globalThis.addEventListener("error", (event) => record(event.error ?? event));
-	globalThis.addEventListener("unhandledrejection", (event) => record(event.reason));
+var innerCreateCsrfMiddleware = (opts = {}) => {
+	return createMiddleware().server(async (ctx) => {
+		const csrfCtx = ctx;
+		if (opts.filter && !await opts.filter(csrfCtx)) return ctx.next();
+		if (await isCsrfRequestAllowed(opts, csrfCtx)) return ctx.next();
+		return getFailureResponse(opts, csrfCtx);
+	});
+};
+var createCsrfMiddleware = innerCreateCsrfMiddleware;
+async function isCsrfRequestAllowed(opts, ctx) {
+	const result = await getCsrfRequestValidationResult(opts, ctx);
+	return result === true || result === void 0 && opts.allowRequestsWithoutOriginCheck === true;
 }
-function consumeLastCapturedError() {
-	if (!lastCapturedError) return void 0;
-	if (Date.now() - lastCapturedError.at > TTL_MS) {
-		lastCapturedError = void 0;
+async function getCsrfRequestValidationResult(opts, ctx) {
+	const fetchSite = ctx.request.headers.get("Sec-Fetch-Site");
+	if (fetchSite !== null) return matchValue(opts.secFetchSite ?? "same-origin", fetchSite, ctx);
+	const origin = ctx.request.headers.get("Origin");
+	if (origin !== null) {
+		if (opts.origin) return matchValue(opts.origin, origin, ctx);
+		return origin === new URL(ctx.request.url).origin;
+	}
+	const referer = ctx.request.headers.get("Referer");
+	if (referer === null || opts.referer === false) return;
+	if (typeof opts.referer === "function") return opts.referer(referer, ctx);
+	if (opts.origin) {
+		const refererOrigin = getOriginFromUrl(referer);
+		return refererOrigin !== void 0 && matchValue(opts.origin, refererOrigin, ctx);
+	}
+	return isRefererSameOrigin(referer, new URL(ctx.request.url).origin);
+}
+async function matchValue(matcher, value, ctx) {
+	if (typeof matcher === "function") return matcher(value, ctx);
+	if (Array.isArray(matcher)) return matcher.includes(value);
+	return value === matcher;
+}
+function getOriginFromUrl(url) {
+	try {
+		return new URL(url).origin;
+	} catch {
 		return;
 	}
-	const { error } = lastCapturedError;
-	lastCapturedError = void 0;
-	return error;
+}
+function isRefererSameOrigin(referer, requestOrigin) {
+	if (referer === requestOrigin) return true;
+	if (!referer.startsWith(requestOrigin)) return false;
+	if (referer.length === requestOrigin.length) return true;
+	const code = referer.charCodeAt(requestOrigin.length);
+	return code === 47 || code === 63 || code === 35;
+}
+async function getFailureResponse(opts, ctx) {
+	if (typeof opts.failureResponse === "function") return opts.failureResponse(ctx);
+	return opts.failureResponse?.clone() ?? new Response("Forbidden", { status: 403 });
 }
 function renderErrorPage() {
 	return `<!doctype html>
@@ -91,40 +110,5 @@ function renderErrorPage() {
   </body>
 </html>`;
 }
-var serverEntryPromise;
-async function getServerEntry() {
-	if (!serverEntryPromise) serverEntryPromise = import("./server-hArwo_IA.mjs").then((m) => m.default ?? m);
-	return serverEntryPromise;
-}
-async function normalizeCatastrophicSsrResponse(response) {
-	if (response.status < 500) return response;
-	if (!(response.headers.get("content-type") ?? "").includes("application/json")) return response;
-	const body = await response.clone().text();
-	if (!isH3SwallowedErrorBody(body)) return response;
-	console.error(consumeLastCapturedError() ?? /* @__PURE__ */ new Error(`h3 swallowed SSR error: ${body}`));
-	return new Response(renderErrorPage(), {
-		status: 500,
-		headers: { "content-type": "text/html; charset=utf-8" }
-	});
-}
-function isH3SwallowedErrorBody(body) {
-	try {
-		const payload = JSON.parse(body);
-		return payload.unhandled === true && payload.message === "HTTPError";
-	} catch {
-		return false;
-	}
-}
-var server_default = { async fetch(request, env, ctx) {
-	try {
-		return await normalizeCatastrophicSsrResponse(await (await getServerEntry()).fetch(request, env, ctx));
-	} catch (error) {
-		console.error(error);
-		return new Response(renderErrorPage(), {
-			status: 500,
-			headers: { "content-type": "text/html; charset=utf-8" }
-		});
-	}
-} };
 //#endregion
-export { server_default as default, renderErrorPage as t };
+export { createCsrfMiddleware as a, server_default as default, ssr_exports as i, TSS_SERVER_FUNCTION as n, createMiddleware as o, getServerFnById as r, renderErrorPage as s, createServerFn as t };

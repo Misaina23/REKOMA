@@ -1,6 +1,6 @@
 import { o as __toESM } from "../../_runtime.mjs";
 import { l as require_react_dom, u as require_react } from "../@floating-ui/react-dom+[...].mjs";
-import { c as Presence, d as useLayoutEffect2, f as createContextScope, g as createSlot, l as useControllableState, o as useDirection, p as Primitive, s as createCollection, u as useId, v as useComposedRefs, y as require_jsx_runtime } from "./react-accordion+[...].mjs";
+import { c as Presence, d as useControllableState, f as useId, g as createSlot, l as Primitive, m as createContextScope, o as useDirection, p as useLayoutEffect2, s as createCollection, v as useComposedRefs, y as require_jsx_runtime } from "./react-accordion+[...].mjs";
 import { t as composeEventHandlers } from "../radix-ui__primitive.mjs";
 import { d as useFocusGuards, f as Portal, h as useCallbackRef, l as hideOthers, m as DismissableLayer, p as FocusScope, u as ReactRemoveScroll } from "./react-dialog+[...].mjs";
 import { t as clamp } from "../radix-ui__number.mjs";
@@ -583,17 +583,18 @@ var SelectItemAlignedPosition = /* @__PURE__ */ import_react.forwardRef(/* @__PU
 	useLayoutEffect2(() => {
 		if (content) setContentZIndex(window.getComputedStyle(content).zIndex);
 	}, [content]);
+	const handleScrollButtonChange = import_react.useCallback((node) => {
+		if (node && shouldRepositionRef.current === true) {
+			position();
+			focusSelectedItem?.();
+			shouldRepositionRef.current = false;
+		}
+	}, [position, focusSelectedItem]);
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(SelectViewportProvider, {
 		scope: __scopeSelect,
 		contentWrapper,
 		shouldExpandOnScrollRef,
-		onScrollButtonChange: import_react.useCallback((node) => {
-			if (node && shouldRepositionRef.current === true) {
-				position();
-				focusSelectedItem?.();
-				shouldRepositionRef.current = false;
-			}
-		}, [position, focusSelectedItem]),
+		onScrollButtonChange: handleScrollButtonChange,
 		children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 			ref: setContentWrapper,
 			style: {
@@ -705,7 +706,8 @@ var SelectItem = /* @__PURE__ */ import_react.forwardRef(/* @__PURE__ */ __name(
 	const isSelected = context.value === value;
 	const [textValue, setTextValue] = import_react.useState(textValueProp ?? "");
 	const [isFocused, setIsFocused] = import_react.useState(false);
-	const composedRefs = useComposedRefs(forwardedRef, useCallbackRef((node) => contentContext.itemRefCallback?.(node, value, disabled)));
+	const handleItemRefCallback = useCallbackRef((node) => contentContext.itemRefCallback?.(node, value, disabled));
+	const composedRefs = useComposedRefs(forwardedRef, handleItemRefCallback);
 	const textId = useId();
 	const pointerTypeRef = import_react.useRef("touch");
 	const handleSelect = /* @__PURE__ */ __name(() => {

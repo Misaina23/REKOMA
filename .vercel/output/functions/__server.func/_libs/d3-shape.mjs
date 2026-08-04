@@ -60,9 +60,7 @@ Linear.prototype = {
 				this._line ? this._context.lineTo(x, y) : this._context.moveTo(x, y);
 				break;
 			case 1: this._point = 2;
-			default:
-				this._context.lineTo(x, y);
-				break;
+			default: this._context.lineTo(x, y);
 		}
 	}
 };
@@ -209,10 +207,8 @@ var Bump = class {
 				else this._context.moveTo(x, y);
 				break;
 			case 1: this._point = 2;
-			default:
-				if (this._x) this._context.bezierCurveTo(this._x0 = (this._x0 + x) / 2, this._y0, this._x0, y, x, y);
-				else this._context.bezierCurveTo(this._x0, this._y0 = (this._y0 + y) / 2, x, this._y0, x, y);
-				break;
+			default: if (this._x) this._context.bezierCurveTo(this._x0 = (this._x0 + x) / 2, this._y0, this._x0, y, x, y);
+			else this._context.bezierCurveTo(this._x0, this._y0 = (this._y0 + y) / 2, x, this._y0, x, y);
 		}
 		this._x0 = x, this._y0 = y;
 	}
@@ -369,9 +365,7 @@ Basis.prototype = {
 	lineEnd: function() {
 		switch (this._point) {
 			case 3: point$1(this, this._x1, this._y1);
-			case 2:
-				this._context.lineTo(this._x1, this._y1);
-				break;
+			case 2: this._context.lineTo(this._x1, this._y1);
 		}
 		if (this._line || this._line !== 0 && this._point === 1) this._context.closePath();
 		this._line = 1 - this._line;
@@ -389,9 +383,7 @@ Basis.prototype = {
 			case 2:
 				this._point = 3;
 				this._context.lineTo((5 * this._x0 + this._x1) / 6, (5 * this._y0 + this._y1) / 6);
-			default:
-				point$1(this, x, y);
-				break;
+			default: point$1(this, x, y);
 		}
 		this._x0 = this._x1, this._x1 = x;
 		this._y0 = this._y1, this._y1 = y;
@@ -427,7 +419,6 @@ BasisClosed.prototype = {
 				this.point(this._x2, this._y2);
 				this.point(this._x3, this._y3);
 				this.point(this._x4, this._y4);
-				break;
 		}
 	},
 	point: function(x, y) {
@@ -446,9 +437,7 @@ BasisClosed.prototype = {
 				this._x4 = x, this._y4 = y;
 				this._context.moveTo((this._x0 + 4 * this._x1 + x) / 6, (this._y0 + 4 * this._y1 + y) / 6);
 				break;
-			default:
-				point$1(this, x, y);
-				break;
+			default: point$1(this, x, y);
 		}
 		this._x0 = this._x1, this._x1 = x;
 		this._y0 = this._y1, this._y1 = y;
@@ -492,9 +481,7 @@ BasisOpen.prototype = {
 				this._line ? this._context.lineTo(x0, y0) : this._context.moveTo(x0, y0);
 				break;
 			case 3: this._point = 4;
-			default:
-				point$1(this, x, y);
-				break;
+			default: point$1(this, x, y);
 		}
 		this._x0 = this._x1, this._x1 = x;
 		this._y0 = this._y1, this._y1 = y;
@@ -562,9 +549,7 @@ MonotoneX.prototype = {
 			case 2:
 				this._context.lineTo(this._x1, this._y1);
 				break;
-			case 3:
-				point(this, this._t0, slope2(this, this._t0));
-				break;
+			case 3: point(this, this._t0, slope2(this, this._t0));
 		}
 		if (this._line || this._line !== 0 && this._point === 1) this._context.closePath();
 		this._line = 1 - this._line;
@@ -585,9 +570,7 @@ MonotoneX.prototype = {
 				this._point = 3;
 				point(this, slope2(this, t1 = slope3(this, x, y)), t1);
 				break;
-			default:
-				point(this, this._t0, t1 = slope3(this, x, y));
-				break;
+			default: point(this, this._t0, t1 = slope3(this, x, y));
 		}
 		this._x0 = this._x1, this._x1 = x;
 		this._y0 = this._y1, this._y1 = y;
@@ -703,16 +686,14 @@ Step.prototype = {
 				this._line ? this._context.lineTo(x, y) : this._context.moveTo(x, y);
 				break;
 			case 1: this._point = 2;
-			default:
-				if (this._t <= 0) {
-					this._context.lineTo(this._x, y);
-					this._context.lineTo(x, y);
-				} else {
-					var x1 = this._x * (1 - this._t) + x * this._t;
-					this._context.lineTo(x1, this._y);
-					this._context.lineTo(x1, y);
-				}
-				break;
+			default: if (this._t <= 0) {
+				this._context.lineTo(this._x, y);
+				this._context.lineTo(x, y);
+			} else {
+				var x1 = this._x * (1 - this._t) + x * this._t;
+				this._context.lineTo(x1, this._y);
+				this._context.lineTo(x1, y);
+			}
 		}
 		this._x = x, this._y = y;
 	}

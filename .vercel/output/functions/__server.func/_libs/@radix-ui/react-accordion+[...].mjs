@@ -190,56 +190,9 @@ var createSlottableError = /* @__PURE__ */ __name$10((ownerName) => {
 }, "createSlottableError");
 var use = import_react[" use ".trim().toString()];
 //#endregion
-//#region node_modules/@radix-ui/react-primitive/dist/index.mjs
-var import_react_dom = /* @__PURE__ */ __toESM(require_react_dom(), 1);
+//#region node_modules/@radix-ui/react-context/dist/index.mjs
 var __defProp$9 = Object.defineProperty;
 var __name$9 = (target, value) => __defProp$9(target, "name", {
-	value,
-	configurable: true
-});
-var Primitive = [
-	"a",
-	"button",
-	"div",
-	"form",
-	"h2",
-	"h3",
-	"img",
-	"input",
-	"label",
-	"li",
-	"nav",
-	"ol",
-	"p",
-	"select",
-	"span",
-	"svg",
-	"ul"
-].reduce((primitive, node) => {
-	const Slot = /* @__PURE__ */ createSlot(`Primitive.${node}`);
-	const Node = import_react.forwardRef((props, forwardedRef) => {
-		const { asChild, ...primitiveProps } = props;
-		const Comp = asChild ? Slot : node;
-		if (typeof window !== "undefined") window[Symbol.for("radix-ui")] = true;
-		return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Comp, {
-			...primitiveProps,
-			ref: forwardedRef
-		});
-	});
-	Node.displayName = `Primitive.${node}`;
-	return {
-		...primitive,
-		[node]: Node
-	};
-}, {});
-function dispatchDiscreteCustomEvent(target, event) {
-	if (target) import_react_dom.flushSync(() => target.dispatchEvent(event));
-}
-__name$9(dispatchDiscreteCustomEvent, "dispatchDiscreteCustomEvent");
-//#endregion
-//#region node_modules/@radix-ui/react-context/dist/index.mjs
-var __defProp$8 = Object.defineProperty;
-var __name$8 = (target, value) => __defProp$8(target, "name", {
 	value,
 	configurable: true
 });
@@ -247,7 +200,7 @@ var __name$8 = (target, value) => __defProp$8(target, "name", {
 function createContext2(rootComponentName, defaultContext) {
 	const Context = import_react.createContext(defaultContext);
 	Context.displayName = rootComponentName + "Context";
-	const Provider = /* @__PURE__ */ __name$8((props) => {
+	const Provider = /* @__PURE__ */ __name$9((props) => {
 		const { children, ...context } = props;
 		const value = import_react.useMemo(() => context, Object.values(context));
 		return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Context.Provider, {
@@ -264,10 +217,10 @@ function createContext2(rootComponentName, defaultContext) {
 		if (optional) return void 0;
 		throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
 	}
-	__name$8(useContext2, "useContext");
+	__name$9(useContext2, "useContext");
 	return [Provider, useContext2];
 }
-__name$8(createContext2, "createContext");
+__name$9(createContext2, "createContext");
 // @__NO_SIDE_EFFECTS__
 function createContextScope(scopeName, createContextScopeDeps = []) {
 	let defaultContexts = [];
@@ -276,7 +229,7 @@ function createContextScope(scopeName, createContextScopeDeps = []) {
 		BaseContext.displayName = rootComponentName + "Context";
 		const index = defaultContexts.length;
 		defaultContexts = [...defaultContexts, defaultContext];
-		const Provider = /* @__PURE__ */ __name$8((props) => {
+		const Provider = /* @__PURE__ */ __name$9((props) => {
 			const { scope, children, ...context } = props;
 			const Context = scope?.[scopeName]?.[index] || BaseContext;
 			const value = import_react.useMemo(() => context, Object.values(context));
@@ -295,15 +248,15 @@ function createContextScope(scopeName, createContextScopeDeps = []) {
 			if (optional) return void 0;
 			throw new Error(`\`${consumerName}\` must be used within \`${rootComponentName}\``);
 		}
-		__name$8(useContext2, "useContext");
+		__name$9(useContext2, "useContext");
 		return [Provider, useContext2];
 	}
-	__name$8(createContext3, "createContext");
-	const createScope = /* @__PURE__ */ __name$8(() => {
+	__name$9(createContext3, "createContext");
+	const createScope = /* @__PURE__ */ __name$9(() => {
 		const scopeContexts = defaultContexts.map((defaultContext) => {
 			return import_react.createContext(defaultContext);
 		});
-		return /* @__PURE__ */ __name$8(function useScope(scope) {
+		return /* @__PURE__ */ __name$9(function useScope(scope) {
 			const contexts = scope?.[scopeName] || scopeContexts;
 			return import_react.useMemo(() => ({ [`__scope${scopeName}`]: {
 				...scope,
@@ -314,16 +267,16 @@ function createContextScope(scopeName, createContextScopeDeps = []) {
 	createScope.scopeName = scopeName;
 	return [createContext3, composeContextScopes(createScope, ...createContextScopeDeps)];
 }
-__name$8(createContextScope, "createContextScope");
+__name$9(createContextScope, "createContextScope");
 function composeContextScopes(...scopes) {
 	const baseScope = scopes[0];
 	if (scopes.length === 1) return baseScope;
-	const createScope = /* @__PURE__ */ __name$8(() => {
+	const createScope = /* @__PURE__ */ __name$9(() => {
 		const scopeHooks = scopes.map((createScope2) => ({
 			useScope: createScope2(),
 			scopeName: createScope2.scopeName
 		}));
-		return /* @__PURE__ */ __name$8(function useComposedScopes(overrideScopes) {
+		return /* @__PURE__ */ __name$9(function useComposedScopes(overrideScopes) {
 			const nextScopes = scopeHooks.reduce((nextScopes2, { useScope, scopeName }) => {
 				const currentScope = useScope(overrideScopes)[`__scope${scopeName}`];
 				return {
@@ -337,14 +290,15 @@ function composeContextScopes(...scopes) {
 	createScope.scopeName = baseScope.scopeName;
 	return createScope;
 }
-__name$8(composeContextScopes, "composeContextScopes");
+__name$9(composeContextScopes, "composeContextScopes");
 //#endregion
 //#region node_modules/@radix-ui/react-use-layout-effect/dist/index.mjs
 var useLayoutEffect2 = globalThis?.document ? import_react.useLayoutEffect : () => {};
 //#endregion
 //#region node_modules/@radix-ui/react-id/dist/index.mjs
-var __defProp$7 = Object.defineProperty;
-var __name$7 = (target, value) => __defProp$7(target, "name", {
+var import_react_dom = /* @__PURE__ */ __toESM(require_react_dom(), 1);
+var __defProp$8 = Object.defineProperty;
+var __name$8 = (target, value) => __defProp$8(target, "name", {
 	value,
 	configurable: true
 });
@@ -357,11 +311,11 @@ function useId(deterministicId) {
 	}, [deterministicId]);
 	return deterministicId || (id ? `radix-${id}` : "");
 }
-__name$7(useId, "useId");
+__name$8(useId, "useId");
 //#endregion
 //#region node_modules/@radix-ui/react-use-effect-event/dist/index.mjs
-var __defProp$6 = Object.defineProperty;
-var __name$6 = (target, value) => __defProp$6(target, "name", {
+var __defProp$7 = Object.defineProperty;
+var __name$7 = (target, value) => __defProp$7(target, "name", {
 	value,
 	configurable: true
 });
@@ -380,16 +334,16 @@ function useEffectEvent(callback) {
 	});
 	return import_react.useMemo(() => ((...args) => ref.current?.(...args)), []);
 }
-__name$6(useEffectEvent, "useEffectEvent");
+__name$7(useEffectEvent, "useEffectEvent");
 //#endregion
 //#region node_modules/@radix-ui/react-use-controllable-state/dist/index.mjs
-var __defProp$5 = Object.defineProperty;
-var __name$5 = (target, value) => __defProp$5(target, "name", {
+var __defProp$6 = Object.defineProperty;
+var __name$6 = (target, value) => __defProp$6(target, "name", {
 	value,
 	configurable: true
 });
 var useInsertionEffect = import_react[" useInsertionEffect ".trim().toString()] || useLayoutEffect2;
-function useControllableState({ prop, defaultProp, onChange = /* @__PURE__ */ __name$5(() => {}, "onChange"), caller }) {
+function useControllableState({ prop, defaultProp, onChange = /* @__PURE__ */ __name$6(() => {}, "onChange"), caller }) {
 	const [uncontrolledProp, setUncontrolledProp, onChangeRef] = useUncontrolledState({
 		defaultProp,
 		onChange
@@ -407,7 +361,7 @@ function useControllableState({ prop, defaultProp, onChange = /* @__PURE__ */ __
 		onChangeRef
 	])];
 }
-__name$5(useControllableState, "useControllableState");
+__name$6(useControllableState, "useControllableState");
 function useUncontrolledState({ defaultProp, onChange }) {
 	const [value, setValue] = import_react.useState(defaultProp);
 	const prevValueRef = import_react.useRef(value);
@@ -427,11 +381,11 @@ function useUncontrolledState({ defaultProp, onChange }) {
 		onChangeRef
 	];
 }
-__name$5(useUncontrolledState, "useUncontrolledState");
+__name$6(useUncontrolledState, "useUncontrolledState");
 function isFunction(value) {
 	return typeof value === "function";
 }
-__name$5(isFunction, "isFunction");
+__name$6(isFunction, "isFunction");
 var SYNC_STATE = Symbol("RADIX:SYNC_STATE");
 function useControllableStateReducer(reducer, userArgs, initialArg, init) {
 	const { prop: controlledState, defaultProp, onChange: onChangeProp, caller } = userArgs;
@@ -482,7 +436,53 @@ function useControllableStateReducer(reducer, userArgs, initialArg, init) {
 	]);
 	return [state, dispatch];
 }
-__name$5(useControllableStateReducer, "useControllableStateReducer");
+__name$6(useControllableStateReducer, "useControllableStateReducer");
+//#endregion
+//#region node_modules/@radix-ui/react-primitive/dist/index.mjs
+var __defProp$5 = Object.defineProperty;
+var __name$5 = (target, value) => __defProp$5(target, "name", {
+	value,
+	configurable: true
+});
+var Primitive = [
+	"a",
+	"button",
+	"div",
+	"form",
+	"h2",
+	"h3",
+	"img",
+	"input",
+	"label",
+	"li",
+	"nav",
+	"ol",
+	"p",
+	"select",
+	"span",
+	"svg",
+	"ul"
+].reduce((primitive, node) => {
+	const Slot = /* @__PURE__ */ createSlot(`Primitive.${node}`);
+	const Node = import_react.forwardRef((props, forwardedRef) => {
+		const { asChild, ...primitiveProps } = props;
+		const Comp = asChild ? Slot : node;
+		if (typeof window !== "undefined") window[Symbol.for("radix-ui")] = true;
+		return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Comp, {
+			...primitiveProps,
+			ref: forwardedRef
+		});
+	});
+	Node.displayName = `Primitive.${node}`;
+	return {
+		...primitive,
+		[node]: Node
+	};
+}, {});
+function dispatchDiscreteCustomEvent(target, event) {
+	if (target) import_react_dom.flushSync(() => target.dispatchEvent(event));
+}
+__name$5(dispatchDiscreteCustomEvent, "dispatchDiscreteCustomEvent");
 //#endregion
 //#region node_modules/@radix-ui/react-presence/dist/index.mjs
 var __defProp$4 = Object.defineProperty;
@@ -1411,9 +1411,7 @@ var AccordionImpl = /* @__PURE__ */ import_react.forwardRef(/* @__PURE__ */ __na
 				if (orientation === "horizontal") if (isDirectionLTR) movePrev();
 				else moveNext();
 				break;
-			case "ArrowUp":
-				if (orientation === "vertical") movePrev();
-				break;
+			case "ArrowUp": if (orientation === "vertical") movePrev();
 		}
 		triggerCollection[nextIndex % triggerCount].ref.current?.focus();
 	});
@@ -1525,4 +1523,4 @@ var Header = AccordionHeader;
 var Trigger2 = AccordionTrigger;
 var Content2 = AccordionContent;
 //#endregion
-export { composeRefs as _, Trigger2 as a, Presence as c, useLayoutEffect2 as d, createContextScope as f, createSlot as g, Slot as h, Root2 as i, useControllableState as l, dispatchDiscreteCustomEvent as m, Header as n, useDirection as o, Primitive as p, Item as r, createCollection as s, Content2 as t, useId as u, useComposedRefs as v, require_jsx_runtime as y };
+export { composeRefs as _, Trigger2 as a, Presence as c, useControllableState as d, useId as f, createSlot as g, Slot as h, Root2 as i, Primitive as l, createContextScope as m, Header as n, useDirection as o, useLayoutEffect2 as p, Item as r, createCollection as s, Content2 as t, dispatchDiscreteCustomEvent as u, useComposedRefs as v, require_jsx_runtime as y };
