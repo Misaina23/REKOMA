@@ -1,1 +1,0 @@
-var e=`/assets/formation-DylxiocZ.jpg`;export{e as t};
